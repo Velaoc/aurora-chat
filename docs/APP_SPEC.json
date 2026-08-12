@@ -1,0 +1,72 @@
+{
+  "name": "Aurora Chat",
+  "purpose": "A ChatGPT-style chat application: users sign in with OAuth, start conversations, send messages, and watch assistant replies stream back token by token through a pluggable AI provider adapter. Ships with a working demo adapter that returns canned streaming replies, plus complete real-provider configuration (OpenAI-compatible streaming API) so swapping in a real key is the only change needed.",
+  "actors": [
+    "User: signs in via Google or GitHub OAuth, owns conversations and messages",
+    "Admin: optional foundation admin access"
+  ],
+  "entities": [
+    {
+      "name": "User",
+      "relationships": [
+        "has_many conversations",
+        "has_many messages through conversations"
+      ]
+    },
+    {
+      "name": "Conversation",
+      "relationships": [
+        "belongs_to user",
+        "has_many messages",
+        "destroys messages when deleted"
+      ]
+    },
+    {
+      "name": "Message",
+      "relationships": [
+        "belongs_to conversation",
+        "role: user or assistant",
+        "content text",
+        "status: streaming or complete"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Sign in",
+      "description": "Google/GitHub OAuth account linking; lands on the chat product itself, not a dashboard"
+    },
+    {
+      "name": "Start a conversation",
+      "description": "New chat from the sidebar; conversation appears in history"
+    },
+    {
+      "name": "Send a message and stream a reply",
+      "description": "User message persists, assistant placeholder starts streaming via SSE, chunks append live, final content saved"
+    },
+    {
+      "name": "Switch conversations",
+      "description": "Sidebar lists conversations with previews; clicking loads the full history"
+    },
+    {
+      "name": "Delete a conversation",
+      "description": "Remove a thread and its messages"
+    }
+  ],
+  "modules": [],
+  "integrations": [
+    {
+      "name": "AI chat provider (OpenAI-compatible streaming API)",
+      "demo_adapter": true
+    },
+    {
+      "name": "Google OAuth sign-in",
+      "demo_adapter": false
+    },
+    {
+      "name": "GitHub OAuth sign-in",
+      "demo_adapter": false
+    }
+  ],
+  "seed_demo": "One demo user (demo@aurora.local) with two conversations (a short greeting exchange and a longer exchange) so sidebar history and message bubbles render immediately; the demo provider adapter streams canned replies live."
+}
